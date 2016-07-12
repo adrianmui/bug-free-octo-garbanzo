@@ -1,34 +1,22 @@
-require 'battle_bot'
+require_relative 'battle_bot'
 
 #weapon.rb
 class Weapon
+  attr_reader :name, :damage, :bot
 
-  attr_accessor :bot
-  attr_reader :name, :damage
-
-  def initialize(name, damage=nil)
-
+  def initialize(name, damage=nil)    
     @bot = nil
-    
-  
     @name =  name
-    
     @damage = damage
 
-    if @name.class != String
-      raise ArgumentError 
-    end
-    if @damage.class != Fixnum && @damage != nil
-      raise ArgumentError 
-    end
+    raise ArgumentError if @name.class != String
+    raise ArgumentError if @damage.class != Fixnum && @damage != nil
   end
 
-  def bot=(bot)
-    if bot.class != BattleBot || bot != nil
-      raise ArgumentError
-    end
-
-    @bot = bot
+  def bot=(a_bot)
+    @bot = a_bot
+    raise ArgumentError if a_bot.class != BattleBot unless a_bot == nil
+    
   end
 
   def name=(str)
@@ -39,15 +27,8 @@ class Weapon
     raise NoMethodError, "no method"
   end
 
-  def bot
-    nil
-  end
-
   def picked_up?
-    if pick_up(weapon)
-      true
-    end
-    false
+    !!@bot 
   end
 
 end

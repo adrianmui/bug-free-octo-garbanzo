@@ -1,8 +1,12 @@
-require 'weapon'
+require_relative 'weapon'
+
+
 
 #battle_bot.rb
 class BattleBot
-  attr_reader :name, :health, :enemies, :weapon
+  attr_reader :name, :health, :enemies, :weapon, :count
+
+
 
   def initialize(name)
     @name = name
@@ -10,14 +14,49 @@ class BattleBot
     @enemies = []
     @weapon = nil
     @dead = false
+    @count = 0
+      
   end
 
-  def attack(another_bot)
-    if another_bot.class != BattleBot
-      raise ArgumentError, ""
-    end
 
-    another_bot.take_damage(@weapon.damage)
+  def attack(another_bot)
+    raise ArgumentError if another_bot.class != BattleBot
+    raise ArgumentError if another_bot == self
+    raise ArgumentError if @weapon == nil
+
+    another_bot.receive_attack_from(self)
+  end
+
+  def receive_attack_from(another_bot)
+    raise ArgumentError if another_bot.class != BattleBot
+    raise ArgumentError if another_bot == self
+    raise ArgumentError if another_bot.weapon == nil
+
+    take_damage(another_bot.weapon.damage)
+    defend_against(another_bot)
+
+    # while !(another_bot.dead? || dead?)
+      
+    # end
+
+    @enemies.push(another_bot) unless @enemies.include?(another_bot)
+  end
+
+  def defend_against(another_bot)
+    return if dead? || !has_weapon?
+    attack(another_bot)
+
+  end
+
+   def take_damage(damage)
+    if damage > @health
+      @health = 0
+      count
+      @dead = true
+    else
+      @health -= damage
+    end
+    @health
   end
 
   def dead?
@@ -25,14 +64,8 @@ class BattleBot
   end
 
   def has_weapon?
-    if @weapon.nil?
-      return false
-    end
-
-    true
+    !@weapon.nil?
   end
-
-  
 
   def name=(str)
     raise NoMethodError, "no method"
@@ -50,32 +83,29 @@ class BattleBot
     raise NoMethodError, "no method"
   end
 
-  def pick_up(weapon_name)
-    if @name.class != Weapon
-      raise ArgumentError 
+  def pick_up(a_weapon)
+    raise ArgumentError unless a_weapon.class == Weapon
+    raise ArgumentError if a_weapon.bot != nil
+    if @weapon == nil
+      @weapon = a_weapon
+      @weapon.bot = self
+      @weapon
+    else
+        nil
     end
-
-    @weapon = weapon_name if @weapon == nil
-    @weapon.bot = @name
   end
 
   def drop_weapon
-    @weapon = nil
-  end
-
-  def take_damage(damage)
-    if damage > @health
-      @health = 0
-      @dead = true
-    else
-      @health -= damage
-    end
-    @health
+    @weapon.bot = nil
+    @weapon= nil
   end
 
   def heal 
       @health += 10 unless @health == 0 || (@health + 10) > 100
-    end
+  end
+
+  
+
 
 
 end
