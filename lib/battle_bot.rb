@@ -4,9 +4,9 @@ require_relative 'weapon'
 
 #battle_bot.rb
 class BattleBot
-  attr_reader :name, :health, :enemies, :weapon, :count
+  attr_reader :name, :health, :enemies, :weapon
 
-
+  @@count = 0
 
   def initialize(name)
     @name = name
@@ -14,10 +14,13 @@ class BattleBot
     @enemies = []
     @weapon = nil
     @dead = false
-    @count = 0
-      
+    
+    @@count += 1
   end
 
+  def self.count
+    @@count
+  end
 
   def attack(another_bot)
     raise ArgumentError if another_bot.class != BattleBot
@@ -35,10 +38,6 @@ class BattleBot
     take_damage(another_bot.weapon.damage)
     defend_against(another_bot)
 
-    # while !(another_bot.dead? || dead?)
-      
-    # end
-
     @enemies.push(another_bot) unless @enemies.include?(another_bot)
   end
 
@@ -49,9 +48,9 @@ class BattleBot
   end
 
    def take_damage(damage)
+    @@count -= 1
     if damage > @health
       @health = 0
-      count
       @dead = true
     else
       @health -= damage

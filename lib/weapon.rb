@@ -4,7 +4,7 @@ require_relative 'battle_bot'
 class Weapon
   attr_reader :name, :damage, :bot
 
-  def initialize(name, damage=nil)    
+  def initialize(name, damage=0)    
     @bot = nil
     @name =  name
     @damage = damage
